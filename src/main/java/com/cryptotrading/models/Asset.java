@@ -1,27 +1,55 @@
 package com.cryptotrading.models;
 
-import java.math.BigDecimal;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+@Entity
+@Table(name = "assets")
 public class Asset {
 
-    private final String ticker;
-    private final String symbol;
-    private final String name;
-    private final AssetType type;
-    private LocalDateTime last_updated;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Asset(String ticker, String symbol, String name, AssetType type, LocalDateTime last_updated) {
-        this.ticker = ticker;
+    @Column(nullable = false, unique = true, length = 20)
+    private String symbol;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private AssetType type;
+
+    @Column(nullable = false)
+    private Integer decimals;
+
+    @Column(nullable = false)
+    private Boolean active;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    protected Asset() {
+    }
+
+    public Asset(String name, String symbol, AssetType type, int decimals, boolean active) {
         this.symbol = symbol;
         this.name = name;
         this.type = type;
-        this.last_updated = last_updated;
+        this.decimals = decimals;
+        this.active = active;
     }
 
-    public String getTicker() {
-        return ticker;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    // ── Getters ────────────────────────────────────────────────────────────────
+
+    public Long getId() {
+        return id;
     }
 
     public String getSymbol() {
@@ -36,7 +64,15 @@ public class Asset {
         return type;
     }
 
-    public LocalDateTime getLast_updated() {
-        return last_updated;
+    public Integer getDecimals() {
+        return decimals;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }
