@@ -1,39 +1,74 @@
 package com.cryptotrading.models;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "users")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
+    private UUID id;
+
+    @Column(nullable = false)
     private String name;
-    private final UUID id;
-    private final LocalDateTime createdAt;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public User(String name, UUID id, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    protected User() {
+    }
+
+    public User(String name, String email, String password) {
         this.name = name;
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.email = email;
+        this.password = password;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ── Getters ────────────────────────────────────────────────────────────────
+
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-        this.updatedAt = LocalDateTime.now();
+    public String getEmail() {
+        return email;
     }
 
-    public UUID getId() {
-        return id;
+    public String getPassword() {
+        return password;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public void updateName(String newName) {
+        if (newName == null || newName.isBlank())
+            throw new IllegalArgumentException("Name must not be blank");
+        this.name = newName;
     }
 }

@@ -1,29 +1,17 @@
 package com.cryptotrading.repositories;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.cryptotrading.models.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 import java.util.UUID;
 
-import com.cryptotrading.models.User;
+@Repository
+public interface UserRepository extends JpaRepository<User, UUID> {
 
-public class UserRepository {
-    private Map<UUID, User> database = new HashMap<>();
+    Optional<User> findByEmail(String email);
 
-    public void save(User user) {
-        database.put(user.getId(), user);
-    }
+    boolean existsByEmail(String email);
 
-    public User findById(UUID id) {
-        return database.get(id);
-    }
-
-    public List<User> findAll() {
-        return new ArrayList<>(database.values());
-    }
-
-    public void deleteById(UUID id) {
-        database.remove(id);
-    }
 }
