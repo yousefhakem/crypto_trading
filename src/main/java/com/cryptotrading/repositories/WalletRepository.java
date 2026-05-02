@@ -1,38 +1,23 @@
 package com.cryptotrading.repositories;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.cryptotrading.models.Wallet;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import com.cryptotrading.models.Wallet;
+@Repository
+public interface WalletRepository extends JpaRepository<Wallet, UUID> {
 
-public class WalletRepository {
-    // Key is the Wallet ID
-    private Map<UUID, Wallet> database = new HashMap<>();
+    /**
+     * Finds a wallet by the owner and asset ticker (enforces uniqueness per asset).
+     */
+    Optional<Wallet> findByUserIdAndAssetSymbol(UUID userId, String assetSymbol);
 
-    public void save(Wallet wallet) {
-        database.put(wallet.getId(), wallet);
-    }
+    /** Returns all wallets belonging to a given user. */
+    List<Wallet> findByUserId(UUID userId);
 
-    public Wallet findById(UUID id) {
-        return database.get(id);
-    }
-
-    public Wallet findByUserIdAndAssetTicker(UUID userId, String assetTicker) {
-        for (Wallet wallet : database.values()) {
-            if (wallet.getUserId().equals(userId) && wallet.getAssetTicker().equals(assetTicker)) {
-                return wallet;
-            }
-        }
-        return null; // Return null if they don't have a wallet for this specific asset
-    }
-
-    public Wallet findByUserId(UUID userId) {
-        for (Wallet wallet : database.values()) {
-            if (wallet.getUserId().equals(userId)) {
-                return wallet;
-            }
-        }
-        return null;
-    }
+    boolean existsByUserIdAndAssetSymbol(UUID userId, String assetSymbol);
 }
