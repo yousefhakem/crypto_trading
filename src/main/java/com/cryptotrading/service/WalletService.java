@@ -1,68 +1,61 @@
 package com.cryptotrading.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import com.cryptotrading.exception.DuplicateWalletException;
+import com.cryptotrading.exception.ResourceNotFoundException;
 import com.cryptotrading.models.Wallet;
+import com.cryptotrading.repositories.AssetRepository;
 import com.cryptotrading.repositories.WalletRepository;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@Transactional
 public class WalletService {
+
     private final WalletRepository walletRepository;
+    private final AssetService assetService;
 
-    public WalletService(WalletRepository walletRepository) {
+    public WalletService(WalletRepository walletRepository, AssetService assetService) {
         this.walletRepository = walletRepository;
+        this.assetService = assetService;
     }
 
-    public Wallet createWallet(UUID userId, String assetTicker) {
-        // Rule 1: Prevent duplicates for the SAME asset
-        if (walletRepository.findByUserIdAndAssetTicker(userId, assetTicker) != null) {
-            throw new RuntimeException("This user already has a wallet for this asset!");
-        }
+    @Transactional
+    public Wallet createWallet(UUID userId, String assetSymbol) {
+        assetService.checkIfAssetExists(assetSymbol);
 
-        Wallet newWallet = new Wallet(UUID.randomUUID(), userId, assetTicker);
-        walletRepository.save(newWallet);
-        return newWallet;
+        if (walletRepository.existsByUserIdAndAssetSymbol(userId, assetSymbol))
+            throw new DuplicateWalletException("This user already has a wallet for this asset!");
+
+        return walletRepository.save(new Wallet(userId, assetSymbol));
     }
 
-    public Wallet getWalletsByUserId(UUID userId) {
+    @Transactional(readOnly = true)
+    public List<Wallet> getWalletsByUserId(UUID userId) {
         return walletRepository.findByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
     public Wallet getWalletById(UUID walletId) {
-        Wallet wallet = walletRepository.findById(walletId);
-        if (wallet == null) {
-            throw new RuntimeException("Wallet not found!");
-        }
-        return wallet;
+        return walletRepository.findById(walletId)
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
     }
 
     public void deposit(UUID walletId, BigDecimal amount) {
-        validateAmount(amount);
-        Wallet wallet = walletRepository.findById(walletId);
-        if (wallet == null) {
-            throw new RuntimeException("Wallet not found!");
-        }
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
         wallet.add(amount);
-        walletRepository.save(wallet);
     }
 
     public void withdraw(UUID walletId, BigDecimal amount) {
-        validateAmount(amount);
-        Wallet wallet = walletRepository.findById(walletId);
-        if (wallet == null) {
-            throw new RuntimeException("Wallet not found!");
-        }
-        if (wallet.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Insufficient balance!");
-        }
-        wallet.sub(amount);
-        walletRepository.save(wallet);
-    }
-
-    private void validateAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
+        wallet.sub(amount); // model validates amount > 0 and balance sufficiency
     }
 }
