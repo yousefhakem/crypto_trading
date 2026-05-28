@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.lang.NonNull;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -36,13 +37,13 @@ public class UserController {
 
     /** GET /api/v1/users/{id} — Get user by ID */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<User> getUserById(@PathVariable @NonNull UUID id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     /** PUT /api/v1/users/{id} — Update user name */
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable UUID id,
+    public ResponseEntity<User> updateUser(@PathVariable @NonNull UUID id,
                                            @Valid @RequestBody CreateUserRequest request) {
         User updated = userService.updateUserName(id, request.getName());
         return ResponseEntity.ok(updated);
@@ -50,7 +51,7 @@ public class UserController {
 
     /** DELETE /api/v1/users/{id} — Delete user */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable @NonNull UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

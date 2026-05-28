@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.lang.NonNull;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -38,13 +39,13 @@ public class WalletController {
 
     /** GET /api/v1/wallets/{id} — Get a single wallet */
     @GetMapping("/wallets/{id}")
-    public ResponseEntity<Wallet> getWalletById(@PathVariable UUID id) {
+    public ResponseEntity<Wallet> getWalletById(@PathVariable @NonNull UUID id) {
         return ResponseEntity.ok(walletService.getWalletById(id));
     }
 
     /** POST /api/v1/wallets/{id}/deposit — Deposit funds into wallet */
     @PostMapping("/wallets/{id}/deposit")
-    public ResponseEntity<Wallet> deposit(@PathVariable UUID id,
+    public ResponseEntity<Wallet> deposit(@PathVariable @NonNull UUID id,
                                           @Valid @RequestBody AmountRequest request) {
         walletService.deposit(id, request.getAmount());
         return ResponseEntity.ok(walletService.getWalletById(id));
@@ -52,7 +53,7 @@ public class WalletController {
 
     /** POST /api/v1/wallets/{id}/withdraw — Withdraw funds from wallet */
     @PostMapping("/wallets/{id}/withdraw")
-    public ResponseEntity<Wallet> withdraw(@PathVariable UUID id,
+    public ResponseEntity<Wallet> withdraw(@PathVariable @NonNull UUID id,
                                            @Valid @RequestBody AmountRequest request) {
         walletService.withdraw(id, request.getAmount());
         return ResponseEntity.ok(walletService.getWalletById(id));

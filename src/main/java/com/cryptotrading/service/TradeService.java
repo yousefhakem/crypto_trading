@@ -1,9 +1,7 @@
 package com.cryptotrading.service;
 
-import com.cryptotrading.exception.InsufficientBalanceException;
 import com.cryptotrading.exception.ResourceNotFoundException;
 import com.cryptotrading.models.Order;
-import com.cryptotrading.models.OrderStatus;
 import com.cryptotrading.models.Trade;
 import com.cryptotrading.models.TradingPair;
 import com.cryptotrading.models.Wallet;
@@ -84,8 +82,8 @@ public class TradeService {
 
     // ── Private helpers ────────────────────────────────────────────────────────
 
-    private void validateTradeInputs(@NonNull Long buyOrderId, @NonNull Long sellOrderId,
-            BigDecimal amount, BigDecimal price, @NonNull Integer tradingPairId) {
+    private void validateTradeInputs(Long buyOrderId, Long sellOrderId,
+            BigDecimal amount, BigDecimal price, Integer tradingPairId) {
         if (buyOrderId == null) {
             throw new IllegalArgumentException("Buy order is required.");
         }

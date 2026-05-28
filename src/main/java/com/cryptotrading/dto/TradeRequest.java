@@ -4,7 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+import org.springframework.lang.NonNull;
 
 /** Request body for POST /api/v1/trades/buy and /api/v1/trades/sell */
 public class TradeRequest {
@@ -26,22 +26,51 @@ public class TradeRequest {
     @NotNull(message = "tradingPairId is required")
     private Integer tradingPairId;
 
-    public TradeRequest() {}
+    public TradeRequest() {
+    }
 
     // ── Getters & Setters ──────────────────────────────────────────────────────
 
-    public Long getBuyOrderId() { return buyOrderId; }
-    public void setBuyOrderId(Long buyOrderId) { this.buyOrderId = buyOrderId; }
+    @NonNull
+    public Long getBuyOrderId() {
+        return buyOrderId;
+    }
 
-    public Long getSellOrderId() { return sellOrderId; }
-    public void setSellOrderId(Long sellOrderId) { this.sellOrderId = sellOrderId; }
+    public void setBuyOrderId(Long buyOrderId) {
+        this.buyOrderId = buyOrderId;
+    }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    @NonNull
+    public Long getSellOrderId() {
+        return sellOrderId;
+    }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public void setSellOrderId(Long sellOrderId) {
+        this.sellOrderId = sellOrderId;
+    }
 
-    public Integer getTradingPairId() { return tradingPairId; }
-    public void setTradingPairId(Integer tradingPairId) { this.tradingPairId = tradingPairId; }
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    @NonNull
+    public Integer getTradingPairId() {
+        return tradingPairId;
+    }
+
+    public void setTradingPairId(Integer tradingPairId) {
+        this.tradingPairId = tradingPairId;
+    }
 }
