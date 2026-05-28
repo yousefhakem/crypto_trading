@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import org.springframework.lang.NonNull;
 
 @Service
 public class TradeService {
@@ -35,7 +36,7 @@ public class TradeService {
     }
 
     @Transactional
-    public void trade(Long buyOrderId, Long sellOrderId, BigDecimal amount, BigDecimal price, Integer tradingPairId) {
+    public void trade(@NonNull Long buyOrderId, @NonNull Long sellOrderId, BigDecimal amount, BigDecimal price, @NonNull Integer tradingPairId) {
         validateTradeInputs(buyOrderId, sellOrderId, amount, price, tradingPairId);
 
         Order buyOrder = orderRepository.findById(buyOrderId)
@@ -83,8 +84,8 @@ public class TradeService {
 
     // ── Private helpers ────────────────────────────────────────────────────────
 
-    private void validateTradeInputs(Long buyOrderId, Long sellOrderId,
-            BigDecimal amount, BigDecimal price, Integer tradingPairId) {
+    private void validateTradeInputs(@NonNull Long buyOrderId, @NonNull Long sellOrderId,
+            BigDecimal amount, BigDecimal price, @NonNull Integer tradingPairId) {
         if (buyOrderId == null) {
             throw new IllegalArgumentException("Buy order is required.");
         }

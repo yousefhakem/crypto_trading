@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.lang.NonNull;
 
 @Service
 @Transactional
@@ -38,13 +39,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(UUID id) {
+    public User getUserById(@NonNull UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
     }
 
     @Transactional
-    public User updateUserName(UUID id, String newName) {
+    public User updateUserName(@NonNull UUID id, String newName) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
         user.updateName(newName);
@@ -52,7 +53,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(@NonNull UUID id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User", id);
         }

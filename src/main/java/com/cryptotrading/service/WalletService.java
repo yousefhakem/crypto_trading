@@ -3,16 +3,15 @@ package com.cryptotrading.service;
 import com.cryptotrading.exception.DuplicateWalletException;
 import com.cryptotrading.exception.ResourceNotFoundException;
 import com.cryptotrading.models.Wallet;
-import com.cryptotrading.repositories.AssetRepository;
 import com.cryptotrading.repositories.WalletRepository;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.lang.NonNull;
 
 @Service
 @Transactional
@@ -42,18 +41,18 @@ public class WalletService {
     }
 
     @Transactional(readOnly = true)
-    public Wallet getWalletById(UUID walletId) {
+    public Wallet getWalletById(@NonNull UUID walletId) {
         return walletRepository.findById(walletId)
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
     }
 
-    public void deposit(UUID walletId, BigDecimal amount) {
+    public void deposit(@NonNull UUID walletId, BigDecimal amount) {
         Wallet wallet = walletRepository.findById(walletId)
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
         wallet.add(amount);
     }
 
-    public void withdraw(UUID walletId, BigDecimal amount) {
+    public void withdraw(@NonNull UUID walletId, BigDecimal amount) {
         Wallet wallet = walletRepository.findById(walletId)
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
         wallet.sub(amount); // model validates amount > 0 and balance sufficiency
